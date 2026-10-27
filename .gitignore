@@ -1,0 +1,58 @@
+# ==========================================
+# 1. Private Configuration
+# ==========================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ==========================================
+# 2. Python & Virtual Environment
+# ==========================================
+.venv/
+.venv-*/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+
+# ==========================================
+#  Logs and Caches
+# ==========================================
+*.log
+logs/
+.pytest_cache/
+.tmp/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# ==========================================
+#  IDE & Compiler Temporary Files
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# ==========================================
+#  Personal Temporary Files
+# ==========================================
+tmp_*
+
+# Local model downloads, vendor checkouts and previous recordings.
+# Keep asset setup instructions in assets/README.md under version control.
+/assets/models/
+/assets/output/
+/voice_assist_output/
+
+# Historical experiments and research references stay local.
+# The supported implementation is main.py + src/.
+/experiments/

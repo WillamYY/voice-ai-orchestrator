@@ -1,0 +1,41 @@
+[project]
+name = "voice-ai-orchestrator"
+version = "0.1.0"
+description = "Experimental microphone, streaming ASR, LLM and TTS orchestrator"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "numpy==1.26.4",
+  "torch==2.8.0",
+  "torchaudio==2.8.0",
+  "transformers==4.57.1",
+  "funasr==1.2.7",
+  "modelscope>=1.20,<2",
+  "soundfile>=0.12,<1",
+  "librosa>=0.11,<0.12",
+  "edge-tts>=7.0,<8",
+  "openai>=1.60,<3",
+  "PyAudio==0.2.14",
+  "pygame==2.6.1",
+  "webrtcvad-wheels==2.0.14",
+  "pydantic-settings>=2.6,<3",
+  "python-dotenv>=1.0,<2",
+]
+
+[dependency-groups]
+test = ["numpy==1.26.4", "pydantic-settings>=2.6,<3"]
+
+[tool.uv]
+# Application scripts run from the source root without an installed package.
+package = false
+# This lock targets the existing Windows x64 voice/audio setup.
+environments = ["sys_platform == 'win32' and platform_machine == 'AMD64'"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+torchaudio = { index = "pytorch-cu128" }
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
