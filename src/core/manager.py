@@ -336,7 +336,7 @@ class ConversationManager:
             
             # Clone history and inject system prompt for the prompt context
             prior = [dict(m) for m in self.history]
-            if self.config.system_prompt:
+            if self.config.system_prompt.strip():
                 prior.insert(0, {'role': 'system', 'content': self.config.system_prompt})
             self.history.append({'role': 'user', 'content': turn.text})
 

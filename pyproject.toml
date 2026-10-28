@@ -9,6 +9,7 @@ dependencies = [
   "torch==2.8.0",
   "torchaudio==2.8.0",
   "transformers==4.57.1",
+  "jinja2==3.1.6",
   "funasr==1.2.7",
   "modelscope>=1.20,<2",
   "soundfile>=0.12,<1",
@@ -23,7 +24,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-test = ["numpy==1.26.4", "pydantic-settings>=2.6,<3"]
+test = ["numpy==1.26.4", "pydantic-settings>=2.6,<3", "jinja2==3.1.6"]
 
 [tool.uv]
 # Application scripts run from the source root without an installed package.

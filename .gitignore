@@ -1,5 +1,5 @@
 # ==========================================
-# 1. Private Configuration
+#  Private Configuration
 # ==========================================
 .env
 .env.*
@@ -8,7 +8,7 @@
 *.key
 
 # ==========================================
-# 2. Python & Virtual Environment
+#  Python & Virtual Environment
 # ==========================================
 .venv/
 .venv-*/
@@ -25,6 +25,7 @@ __pycache__/
 logs/
 .pytest_cache/
 .tmp/
+.cache/
 .ruff_cache/
 .mypy_cache/
 .coverage
@@ -47,12 +48,9 @@ dist/
 # ==========================================
 tmp_*
 
-# Local model downloads, vendor checkouts and previous recordings.
-# Keep asset setup instructions in assets/README.md under version control.
-/assets/models/
-/assets/output/
+# Local tests, model downloads, vendor checkouts and recordings.
+/tests/
+/requirements-test.txt
+/assets/
 /voice_assist_output/
-
-# Historical experiments and research references stay local.
-# The supported implementation is main.py + src/.
 /experiments/

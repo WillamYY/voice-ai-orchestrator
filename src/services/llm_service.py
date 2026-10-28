@@ -2,9 +2,12 @@
 import asyncio
 from collections.abc import Iterator
 import logging
+from pathlib import Path
 import queue
 import threading
 import time
+
+from src.services.chat_prompt import ChatPromptAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +20,7 @@ class LLMService:
         self.config = config
         self.mode = config.llm_backend  # 'local' or 'api'
         self._model = self._tokenizer = None
+        self._prompt_adapter = None
         self._worker = None            # Background worker thread running generation
         self._cancel = None            # Active cancellation token
         self._closed = False
@@ -24,6 +28,11 @@ class LLMService:
     def prepare(self) -> None:
         """Pre-load local Hugging Face weights and tokenizer onto the inference device."""
         if self.mode == 'local' and self._model is None:
+            if not self.config.llm_model_path.strip() or not Path(self.config.llm_model_path).is_dir():
+                raise FileNotFoundError(
+                    f'LLM_MODEL_PATH is not an existing local directory: {self.config.llm_model_path}. '
+                    'Set LLM_MODEL_PATH in .env to your model directory; relative paths resolve under BASE_DIR.'
+                )
             import torch
             from transformers import AutoModelForCausalLM, AutoTokenizer
             from src.services.device import inference_device
@@ -36,6 +45,8 @@ class LLMService:
             self._tokenizer = AutoTokenizer.from_pretrained(
                 self.config.llm_model_path, local_files_only=True
             )
+            self._prompt_adapter = ChatPromptAdapter(self._tokenizer)
+            self._prompt_adapter.validate()
             
             # Select fp32 for CPU for compatibility
             dtype = 'auto' if device == 'cuda' else torch.float32
@@ -57,15 +68,14 @@ class LLMService:
             self.config.llm_input_tokens,
             self._model.config.max_position_embeddings - self.config.llm_max_tokens
         )
+        if budget <= 0:
+            raise ValueError('LLM output token budget leaves no room for a local prompt')
         messages = list(messages)
 
         # Keep trying to fit the inputs into the token budget
         while True:
-            # Format prompt using the tokenizer's chat template (e.g. ChatML for Qwen)
-            text = self._tokenizer.apply_chat_template(
-                messages, tokenize=False, add_generation_prompt=True
-            )
-            inputs = self._tokenizer(text, return_tensors='pt', add_special_tokens=False)
+            # Adapt each retained history candidate so folded system instructions survive pruning.
+            inputs = self._prompt_adapter.tokenize(messages)
 
             # If fit within the budget, return successfully
             if inputs['input_ids'].shape[-1] <= budget:

@@ -50,6 +50,8 @@ def main(argv=None):
         check(module, load)
     if settings.llm_backend == 'local':
         def local_files():
+            if not settings.llm_model_path.strip():
+                raise ValueError('Set LLM_MODEL_PATH to an existing model/tokenizer directory for local mode')
             root = Path(settings.llm_model_path)
             required = ['config.json', 'tokenizer_config.json']
             if any(not (root / name).is_file() for name in required):
